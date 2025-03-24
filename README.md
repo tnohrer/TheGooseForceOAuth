@@ -59,6 +59,10 @@ pip install -r requirements.txt
 - Per-org Connected Apps
 - Standard OAuth 2.0 security practices
 
+
+## Technical Break Down
+1. login_handler.py - Core Authentication File
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
