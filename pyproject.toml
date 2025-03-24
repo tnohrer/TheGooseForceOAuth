@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "thegooseforce"
+version = "0.2.0"
+description = "Salesforce integration for Goose with secure OAuth authentication"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [
+    { name = "Block", email = "goose@block.xyz" }
+]
+keywords = ["salesforce", "crm", "oauth", "api"]
+dependencies = [
+    "requests>=2.31.0",
+    "keyring>=24.3.0",
+    "fastapi>=0.104.1",
+    "uvicorn>=0.24.0",
+    "mcp>=0.1.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/block/goose"
+Repository = "https://github.com/block/goose"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/thegooseforce"]

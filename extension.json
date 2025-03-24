@@ -1,0 +1,72 @@
+{
+    "name": "thegooseforce",
+    "display_name": "TheGooseForce",
+    "version": "0.2.0",
+    "description": "Salesforce integration for Goose",
+    "author": "Block",
+    "license": "MIT",
+    "requirements": {
+        "python": ">=3.9",
+        "packages": [
+            "simple-salesforce>=1.12.5"
+        ]
+    },
+    "url_schemes": [
+        {
+            "scheme": "goose",
+            "path": "extension/thegooseforce/oauth2/callback",
+            "description": "OAuth callback for Salesforce login",
+            "handler": "thegooseforce_handle_oauth",
+            "command": "thegooseforce_handle_oauth",
+            "name": "oauth_callback",
+            "display_name": "OAuth Callback Handler",
+            "parameters": {
+                "callback_url": {
+                    "type": "string",
+                    "description": "The OAuth callback URL",
+                    "required": true
+                }
+            }
+        }
+    ],
+    "tools": [
+        {
+            "name": "thegooseforce_login",
+            "description": "Login to Salesforce.",
+            "parameters": {
+                "environment": {
+                    "type": "string",
+                    "description": "Environment selection ('sandbox' or 'production')",
+                    "enum": ["sandbox", "production"],
+                    "required": false
+                }
+            }
+        },
+        {
+            "name": "thegooseforce_handle_oauth",
+            "description": "Handle OAuth callback.",
+            "parameters": {
+                "callback_url": {
+                    "type": "string",
+                    "description": "The full OAuth callback URL",
+                    "required": true
+                }
+            }
+        },
+        {
+            "name": "thegooseforce_query",
+            "description": "Execute a SOQL query.",
+            "parameters": {
+                "soql": {
+                    "type": "string",
+                    "description": "The SOQL query to execute",
+                    "required": true
+                }
+            }
+        },
+        {
+            "name": "thegooseforce_logout",
+            "description": "Logout from Salesforce."
+        }
+    ]
+}

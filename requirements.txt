@@ -1,0 +1,2 @@
+simple-salesforce>=1.12.4
+keyring>=24.2.0
