@@ -29,7 +29,7 @@ A Salesforce OAuth extension for Goose that allows secure authentication with Sa
    - Click Save
 2. After saving, wait ~10 minutes for settings to propagate
 3. Get the Consumer Key from Manage > View Consumer Details
-4. Share the Consumer Key with your team
+4. Share the Consumer Key with your team in accordance to your own security practices IE: OnePass, etc
 
 ### For Users
 1. Install the Goose extension
