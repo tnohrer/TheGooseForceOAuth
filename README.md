@@ -2,6 +2,7 @@
 
 A Salesforce OAuth extension for Goose that allows secure authentication with Salesforce orgs.
 
+
 ## Features
 - Secure OAuth 2.0 implementation
 - Support for sandbox and production orgs
@@ -43,6 +44,7 @@ A Salesforce OAuth extension for Goose that allows secure authentication with Sa
 - Python 3.8+
 - Goose Desktop Application
 - Access to a Salesforce org
+- Requires the Goose UI to run
 
 ## Installation
 ```bash
