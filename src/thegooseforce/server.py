@@ -16,7 +16,7 @@ class TheGooseForceExtension(FastMCP):
         super().__init__(
             name="thegooseforce",
             display_name="TheGooseForce",
-            description="Salesforce integration for Goose",
+            description="Salesforce integration for Goose - Read-only operations",
         )
         self.login_handler = LoginHandler()
         self._setup_tools()
@@ -73,7 +73,63 @@ class TheGooseForceExtension(FastMCP):
 
         @self.tool("thegooseforce_query")
         async def query(soql: str) -> dict:
-            """Execute a SOQL query."""
+            """Execute a SOQL query with safety features."""
+            try:
+                sf = self.login_handler.get_sf()
+                if not sf:
+                    return {
+                        "success": False,
+                        "error": "Not authenticated. Please login first using thegooseforce_login"
+                    }
+
+                # Query safety checks
+                soql_upper = soql.upper().strip()
+                
+                # Ensure this is a SELECT query
+                if not soql_upper.startswith('SELECT'):
+                    return {
+                        "success": False,
+                        "error": "Only SELECT queries are allowed. DML operations are not permitted."
+                    }
+                
+                # Check for COUNT queries without WHERE
+                if 'SELECT COUNT()' in soql_upper and 'WHERE' not in soql_upper:
+                    return {
+                        "success": False,
+                        "error": "COUNT queries must include a WHERE clause for performance reasons."
+                    }
+                
+                # Add LIMIT if not present and not a COUNT query
+                if 'LIMIT' not in soql_upper and 'COUNT()' not in soql_upper:
+                    soql = f"{soql.rstrip()} LIMIT 200"
+                    logger.info(f"Added LIMIT clause. Modified query: {soql}")
+                
+                # Execute query
+                try:
+                    logger.info(f"Executing SOQL query: {soql}")
+                    results = sf.query_all(soql)
+                    return {"success": True, "results": results}
+                except Exception as e:
+                    # Session management - handle expired sessions
+                    if "INVALID_SESSION_ID" in str(e):
+                        logger.warning("Session expired, clearing session")
+                        self.login_handler.clear_session()
+                        return {
+                            "success": False,
+                            "error": "Session expired. Please login again."
+                        }
+                    return {
+                        "success": False,
+                        "error": str(e)
+                    }
+                    
+            except Exception as e:
+                logger.error(f"Query failed: {str(e)}")
+                return {"success": False, "error": str(e)}
+
+        @self.tool("thegooseforce_search")
+        async def search(search_term: str) -> dict:
+            """Execute a SOSL search."""
             try:
                 sf = self.login_handler.get_sf()
                 if not sf:
@@ -82,13 +138,12 @@ class TheGooseForceExtension(FastMCP):
                         "error": "Not authenticated. Please login first using thegooseforce_login"
                     }
                 
-                # Execute query
                 try:
-                    logger.info(f"Executing SOQL query: {soql}")
-                    results = sf.query_all(soql)
+                    logger.info(f"Executing SOSL search: {search_term}")
+                    results = sf.search(search_term)
                     return {"success": True, "results": results}
                 except Exception as e:
-                    # If query fails due to session expiry, clear session
+                    # Session management - handle expired sessions
                     if "INVALID_SESSION_ID" in str(e):
                         logger.warning("Session expired, clearing session")
                         self.login_handler.clear_session()
@@ -96,10 +151,13 @@ class TheGooseForceExtension(FastMCP):
                             "success": False,
                             "error": "Session expired. Please login again."
                         }
-                    raise
+                    return {
+                        "success": False,
+                        "error": str(e)
+                    }
                     
             except Exception as e:
-                logger.error(f"Query failed: {str(e)}")
+                logger.error(f"Search failed: {str(e)}")
                 return {"success": False, "error": str(e)}
 
 def run_mcp_server():
